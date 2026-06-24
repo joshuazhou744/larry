@@ -5,19 +5,17 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false)
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg-base)' }}>
+    <div className="flex flex-col h-screen bg-[var(--bg-base)]">
 
       {/* Titlebar */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        height: 38, padding: '0 12px',
-        background: 'var(--bg-titlebar)', borderBottom: '1px solid var(--border)',
-        flexShrink: 0, WebkitAppRegion: 'drag',
-      }}>
-        <h1 style={{ fontSize: 15, letterSpacing: '0.15em', color: 'var(--accent-red)', userSelect: 'none' }}>
+      <div
+        className="flex items-center justify-between h-9 px-3 bg-[var(--bg-titlebar)] border-b border-[var(--border)] shrink-0"
+        style={{ WebkitAppRegion: 'drag' }}
+      >
+        <h1 className="text-sm tracking-widest uppercase text-[var(--accent-red)] select-none">
           Lineup Larry
         </h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, WebkitAppRegion: 'no-drag' }}>
+        <div className="flex items-center gap-1" style={{ WebkitAppRegion: 'no-drag' }}>
           <TitlebarButton title="Settings" onClick={() => setSettingsOpen(true)}>
             <IconSettings size={14} stroke={1.5} />
           </TitlebarButton>
@@ -28,26 +26,23 @@ export default function App() {
       </div>
 
       {/* Body */}
-      <div style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative' }}>
+      <div className="flex flex-1 min-h-0 relative">
 
         {/* Map canvas area */}
-        <div className="dot-grid" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center', color: 'var(--text-dim)' }}>
-            <div style={{ fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 4 }}>Map Canvas</div>
-            <div style={{ fontSize: 11 }}>placeholder</div>
+        <div className="dot-grid flex-1 flex items-center justify-center">
+          <div className="text-center text-[var(--text-dim)]">
+            <div className="text-xs tracking-widest uppercase mb-1">Map Canvas</div>
+            <div className="text-xs">placeholder</div>
           </div>
         </div>
 
         {/* Sidebar */}
-        <div className="sidebar" style={{ width: 200, display: 'flex', flexDirection: 'column', gap: 20, padding: 16 }}>
+        <div className="sidebar w-48 flex flex-col gap-5 p-4 overflow-y-auto">
           <Section label="Map"><Item>Lorem ipsum dolor</Item></Section>
           <Section label="Agent"><Item>Lorem ipsum dolor</Item></Section>
-          <Section label="Lineups">
-            {['Lorem ipsum 1', 'Lorem ipsum 2', 'Lorem ipsum 3'].map(t => <Item key={t}>{t}</Item>)}
-          </Section>
+          <Section label="Lineups"></Section>
         </div>
 
-        {/* Settings modal */}
         {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
       </div>
 
@@ -55,44 +50,27 @@ export default function App() {
   )
 }
 
-/* ── Settings modal ─────────────────────────────────────────── */
 function SettingsModal({ onClose }) {
   return (
-    <div style={{
-      position: 'absolute', inset: 0,
-      background: 'var(--bg-overlay)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      zIndex: 100,
-    }}>
-      <div style={{
-        background: 'var(--bg-surface)', border: '1px solid var(--border)',
-        borderRadius: 8, width: 420, maxWidth: '90%',
-        display: 'flex', flexDirection: 'column',
-      }}>
+    <div className="absolute inset-0 bg-[var(--bg-overlay)] flex items-center justify-center z-50">
+      <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg w-full max-w-md mx-4 flex flex-col">
 
         {/* Modal header */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 16px', borderBottom: '1px solid var(--border)',
-        }}>
-          <span style={{ fontSize: 13, letterSpacing: '0.1em', fontFamily: 'Oswald, sans-serif', color: 'var(--text-primary)' }}>
-            SETTINGS
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
+          <span className="text-xs tracking-widest uppercase text-[var(--text-primary)] font-[Oswald,sans-serif]">
+            Settings
           </span>
           <TitlebarButton title="Close" onClick={onClose}>
             <IconX size={14} stroke={1.5} />
           </TitlebarButton>
         </div>
 
-        {/* Modal body */}
-        <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div className="p-4 flex flex-col gap-6">
           <SettingsSection label="Keybinds">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <SettingRow label="Toggle overlay">
+            <div className="flex flex-col gap-1">
+              <SettingRow label="Toggle overlay (must start with Alt)">
                 <HotkeyInput />
               </SettingRow>
-              <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                Must start with Alt — e.g. Alt+L, Alt+Shift+F
-              </div>
             </div>
           </SettingsSection>
         </div>
@@ -104,21 +82,19 @@ function SettingsModal({ onClose }) {
 
 function SettingsSection({ label, children }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <div style={{ fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-muted)', fontFamily: 'Oswald, sans-serif' }}>
+    <div className="flex flex-col gap-2">
+      <div className="text-xs tracking-widest uppercase text-[var(--text-muted)] font-[Oswald,sans-serif]">
         {label}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {children}
-      </div>
+      <div className="flex flex-col gap-2">{children}</div>
     </div>
   )
 }
 
-function SettingRow({ label, children }) {
+function SettingRow({ label, description, children }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{label}</span>
+    <div className="flex items-center justify-between gap-4">
+      <span className="text-xs text-[var(--text-muted)]">{label}</span>
       {children}
     </div>
   )
@@ -142,8 +118,8 @@ function HotkeyInput() {
     if (e.shiftKey) parts.push('Shift')
     const key = e.key.length === 1 ? e.key.toUpperCase() : e.key
     if (!['Control', 'Alt', 'Shift', 'Meta'].includes(e.key)) parts.push(key)
-    if (!e.altKey) return          // must include Alt
-    if (parts.length < 2) return  // require at least modifier + key
+    if (!e.altKey) return
+    if (parts.length < 2) return
     const combo = parts.join('+')
     setHotkey(combo)
     setRecording(false)
@@ -157,14 +133,11 @@ function HotkeyInput() {
       onClick={startRecording}
       onKeyDown={recording ? handleKeyDown : undefined}
       onBlur={() => setRecording(false)}
+      className="rounded px-3 py-1 text-xs text-center cursor-pointer select-none outline-none transition-colors min-w-24 shrink-0"
       style={{
         background: recording ? 'var(--accent-red-dim)' : 'var(--bg-item)',
         border: `1px solid ${recording ? 'var(--accent-red)' : 'var(--border)'}`,
-        borderRadius: 4, padding: '4px 10px',
-        fontSize: 12, color: recording ? 'var(--accent-red)' : 'var(--text-primary)',
-        cursor: 'pointer', minWidth: 100, textAlign: 'center',
-        outline: 'none', transition: 'border 0.15s, color 0.15s',
-        userSelect: 'none',
+        color: recording ? 'var(--accent-red)' : 'var(--text-primary)',
       }}
     >
       {recording ? 'Press keys…' : hotkey}
@@ -172,17 +145,12 @@ function HotkeyInput() {
   )
 }
 
-/* ── Shared primitives ──────────────────────────────────────── */
 function TitlebarButton({ title, onClick, children }) {
   return (
-    <button onClick={onClick} title={title} style={{
-      background: 'transparent', border: 'none', cursor: 'pointer',
-      color: 'var(--text-muted)', width: 28, height: 28, borderRadius: 4,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      transition: 'background 0.15s, color 0.15s',
-    }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-red-hover)'; e.currentTarget.style.color = 'var(--accent-red)' }}
-      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)' }}
+    <button
+      onClick={onClick}
+      title={title}
+      className="w-7 h-7 flex items-center justify-center rounded border-none cursor-pointer bg-transparent text-[var(--text-muted)] hover:bg-[var(--accent-red-hover)] hover:text-[var(--accent-red)] transition-colors"
     >
       {children}
     </button>
@@ -191,8 +159,8 @@ function TitlebarButton({ title, onClick, children }) {
 
 function Section({ label, children }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <div style={{ fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-muted)', fontFamily: 'Oswald, sans-serif' }}>
+    <div className="flex flex-col gap-1.5">
+      <div className="text-xs tracking-widest uppercase text-[var(--text-muted)] font-[Oswald,sans-serif]">
         {label}
       </div>
       {children}
@@ -202,7 +170,7 @@ function Section({ label, children }) {
 
 function Item({ children }) {
   return (
-    <div style={{ background: 'var(--bg-item)', borderRadius: 4, padding: '6px 10px', fontSize: 12, color: 'var(--text-muted)' }}>
+    <div className="bg-[var(--bg-item)] rounded px-2.5 py-1.5 text-xs text-[var(--text-muted)]">
       {children}
     </div>
   )

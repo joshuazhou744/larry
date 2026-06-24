@@ -33,6 +33,7 @@ function createOverlay() {
   } else {
     overlayWindow.loadFile(join(__dirname, '../renderer/overlay.html'))
   }
+  blockDevTools(overlayWindow)
 }
 
 function createPanel() {
@@ -62,11 +63,22 @@ function createPanel() {
   } else {
     panelWindow.loadFile(join(__dirname, '../renderer/panel.html'))
   }
+  blockDevTools(panelWindow)
+}
+
+function blockDevTools(win) {
+  if (!is.dev) {
+    win.webContents.on('before-input-event', (e, input) => {
+      if (input.key == 'F12') e.preventDefault()
+      if (input.control && input.shift && input.key == 'I') e.preventDefault()
+    })
+  }
 }
 
 app.whenReady().then(() => {
   createOverlay()
   createPanel()
+
 
   // Alt+L toggles the panel — works even when game is focused
   globalShortcut.register('Alt+L', () => {

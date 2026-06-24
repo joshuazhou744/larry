@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* ── Color tokens ─────────────────────────────────────────── */
 :root {
@@ -21,7 +23,7 @@
 }
 
 /* ── Base ─────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button { outline: none; }
 
 body {
   background: var(--bg-base);
