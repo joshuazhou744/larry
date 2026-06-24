@@ -15,7 +15,8 @@ export default function App() {
     const onMove = (e) => {
       const rect = bodyRef.current.getBoundingClientRect()
       const next = rect.right - e.clientX
-      setSidebarWidth(Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, next)))
+      const maxHalf = rect.width / 2
+      setSidebarWidth(Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, maxHalf, next)))
     }
     const onUp = () => {
       document.removeEventListener('mousemove', onMove)
@@ -158,12 +159,7 @@ function HotkeyInput() {
       onClick={startRecording}
       onKeyDown={recording ? handleKeyDown : undefined}
       onBlur={() => setRecording(false)}
-      className="rounded px-3 py-1 text-xs text-center cursor-pointer select-none outline-none transition-colors min-w-24 shrink-0"
-      style={{
-        background: recording ? 'var(--accent-red-dim)' : 'var(--bg-item)',
-        border: `1px solid ${recording ? 'var(--accent-red)' : 'var(--border)'}`,
-        color: recording ? 'var(--accent-red)' : 'var(--text-primary)',
-      }}
+      className={`border rounded px-3 py-1 text-xs text-center cursor-pointer select-none outline-none transition-colors min-w-24 shrink-0 ${recording ? 'bg-[var(--accent-red-dim)] text-[var(--accent-red)] border-[var(--accent-red)]' : 'bg-[var(--bg-item)] text-[var(--text-primary)] border-[var(--border)] hover:bg-[var(--accent-red-soft)]'}`}
     >
       {recording ? 'Press keys…' : hotkey}
     </div>

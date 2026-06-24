@@ -38,7 +38,7 @@ function createOverlay() {
 
 function createPanel() {
   panelWindow = new BrowserWindow({
-    width: 900,
+    width: 1000,
     height: 720,
     minWidth: 520,
     minHeight: 380,
