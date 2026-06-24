@@ -1,8 +1,29 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { IconX, IconSettings } from '@tabler/icons-react'
+
+const SIDEBAR_MIN = 160
+const SIDEBAR_MAX = 480
+const SIDEBAR_DEFAULT = 240
 
 export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_DEFAULT)
+  const bodyRef = useRef(null)
+
+  const onDividerMouseDown = useCallback((e) => {
+    e.preventDefault()
+    const onMove = (e) => {
+      const rect = bodyRef.current.getBoundingClientRect()
+      const next = rect.right - e.clientX
+      setSidebarWidth(Math.max(SIDEBAR_MIN, Math.min(SIDEBAR_MAX, next)))
+    }
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+  }, [])
 
   return (
     <div className="flex flex-col h-screen bg-[var(--bg-base)]">
@@ -12,7 +33,7 @@ export default function App() {
         className="flex items-center justify-between h-9 px-3 bg-[var(--bg-titlebar)] border-b border-[var(--border)] shrink-0"
         style={{ WebkitAppRegion: 'drag' }}
       >
-        <h1 className="text-sm tracking-widest uppercase text-[var(--accent-red)] select-none">
+        <h1 className="text-md tracking-widest uppercase text-[var(--accent-red)] select-none">
           Lineup Larry
         </h1>
         <div className="flex items-center gap-1" style={{ WebkitAppRegion: 'no-drag' }}>
@@ -26,21 +47,25 @@ export default function App() {
       </div>
 
       {/* Body */}
-      <div className="flex flex-1 min-h-0 relative">
+      <div ref={bodyRef} className="flex flex-1 min-h-0 relative">
 
         {/* Map canvas area */}
         <div className="dot-grid flex-1 flex items-center justify-center">
-          <div className="text-center text-[var(--text-dim)]">
-            <div className="text-xs tracking-widest uppercase mb-1">Map Canvas</div>
-            <div className="text-xs">placeholder</div>
-          </div>
+          hi
         </div>
 
+        {/* Drag handler */}
+        <div
+          onMouseDown={onDividerMouseDown}
+          className="w-0.5 shrink-0 cursor-col-resize bg-[var(--border)] hover:bg-[var(--accent-red-soft)] transition-colors"
+        />
+
         {/* Sidebar */}
-        <div className="sidebar w-48 flex flex-col gap-5 p-4 overflow-y-auto">
-          <Section label="Map"><Item>Lorem ipsum dolor</Item></Section>
-          <Section label="Agent"><Item>Lorem ipsum dolor</Item></Section>
-          <Section label="Lineups"></Section>
+        <div
+          className="sidebar flex flex-col gap-5 p-4 overflow-y-auto shrink-0"
+          style={{ width: sidebarWidth }}
+        >
+          hi
         </div>
 
         {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}

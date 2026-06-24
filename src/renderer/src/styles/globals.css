@@ -18,6 +18,7 @@
   --accent-red:        hsl(354 100% 63%);       /* VALORANT red — title, highlights */
   --accent-red-dim:    hsl(354 100% 63% / 0.08); /* faint red tint — active inputs */
   --accent-red-hover:  hsl(354 100% 63% / 0.15); /* red hover state */
+  --accent-red-soft:   hsl(354, 53%, 47%);          /* muted red — divider hover */
   --accent-teal:       hsl(174  80% 45%);         /* secondary accent */
   --bg-overlay:        hsl(220 30%  4% / 0.85);   /* modal backdrop */
 }
@@ -47,7 +48,6 @@ h1, h2, h3, h4 {
 
 .sidebar {
   background: linear-gradient(180deg, hsl(218 26% 9%), hsl(218 28% 6.5%));
-  border-left: 1px solid var(--border);
 }
 
 /* ── Scrollbars ───────────────────────────────────────────── */
