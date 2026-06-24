@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@electron-toolkit/utils": "^3.0.0",
+    "@supabase/supabase-js": "^2.108.2",
     "@tabler/icons-react": "^3.44.0",
     "electron": "^32.0.0",
     "koffi": "^3.0.2"

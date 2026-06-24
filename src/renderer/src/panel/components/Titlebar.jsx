@@ -8,7 +8,7 @@ export default function Titlebar({ onSettingsOpen }) {
       style={{ WebkitAppRegion: 'drag' }}
     >
       <h1 className="text-md tracking-widest uppercase text-[var(--accent-red)] select-none">
-        Lineup Larry
+        Larry
       </h1>
       <div className="flex items-center gap-1" style={{ WebkitAppRegion: 'no-drag' }}>
         <TitlebarButton title="Settings" onClick={onSettingsOpen}>

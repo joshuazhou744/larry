@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { IconX } from '@tabler/icons-react'
 import TitlebarButton from './TitlebarButton'
 
-export default function SettingsModal({ onClose }) {
+export default function SettingsModal({ onClose, screenshotOpacity, onOpacityChange }) {
   return (
     <div className="absolute inset-0 bg-[var(--bg-overlay)] flex items-center justify-center z-50">
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg w-full max-w-md mx-4 flex flex-col">
@@ -17,15 +17,32 @@ export default function SettingsModal({ onClose }) {
         </div>
 
         <div className="p-4 flex flex-col gap-6">
-          <SettingsSection label="Keybinds">
-            <div className="flex flex-col gap-1">
-              <SettingRow label="Toggle overlay (must start with Alt)">
-                <HotkeyInput />
-              </SettingRow>
-            </div>
-          </SettingsSection>
-        </div>
 
+          <SettingsSection label="Keybinds (must start with Alt)">
+            <SettingRow label="Toggle larry">
+              <HotkeyInput defaultKey="Alt+L" onCommit={(k) => window.api.setHotkey(k)} />
+            </SettingRow>
+            <SettingRow label="Cycle screenshot in overlay mode">
+              <HotkeyInput defaultKey="Alt+N" onCommit={(k) => window.api.setCycleHotkey(k)} />
+            </SettingRow>
+            <SettingRow label="Exit overlay mode">
+              <HotkeyInput defaultKey="Alt+X" onCommit={(k) => window.api.setExitHotkey(k)} />
+            </SettingRow>
+          </SettingsSection>
+
+          <SettingsSection label="Screenshot overlay">
+            <SettingRow label={`Opacity — ${Math.round(screenshotOpacity * 100)}%`}>
+              <input
+                type="range"
+                min={0.1} max={1} step={0.05}
+                value={screenshotOpacity}
+                onChange={(e) => onOpacityChange(parseFloat(e.target.value))}
+                className="w-32 accent-[var(--accent-red)] cursor-pointer"
+              />
+            </SettingRow>
+          </SettingsSection>
+
+        </div>
       </div>
     </div>
   )
@@ -51,8 +68,8 @@ function SettingRow({ label, children }) {
   )
 }
 
-function HotkeyInput() {
-  const [hotkey, setHotkey] = useState('Alt+L')
+function HotkeyInput({ defaultKey, onCommit }) {
+  const [hotkey, setHotkey] = useState(defaultKey)
   const [recording, setRecording] = useState(false)
   const ref = useRef(null)
 
@@ -74,7 +91,7 @@ function HotkeyInput() {
     const combo = parts.join('+')
     setHotkey(combo)
     setRecording(false)
-    window.api.setHotkey(combo)
+    onCommit(combo)
   }
 
   return (

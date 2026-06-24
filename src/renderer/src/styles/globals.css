@@ -50,6 +50,26 @@ h1, h2, h3, h4 {
   background: linear-gradient(180deg, hsl(218 26% 9%), hsl(218 28% 6.5%));
 }
 
+.minimap-tint {
+  filter: brightness(0.85) saturate(0.85);
+}
+
+.clip-tag {
+  clip-path: polygon(0 0, 100% 0, 100% 70%, calc(100% - 10px) 100%, 0 100%);
+}
+
+@keyframes spin-once {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-once { animation: spin-once 0.45s cubic-bezier(0.4, 0, 0.2, 1); }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fade-up 0.25s ease-out both; }
+
 /* ── Scrollbars ───────────────────────────────────────────── */
 ::-webkit-scrollbar              { width: 6px; }
 ::-webkit-scrollbar-track        { background: transparent; }
