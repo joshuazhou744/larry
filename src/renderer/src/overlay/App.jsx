@@ -51,7 +51,6 @@ export default function App() {
   const boxes = currentImage?.boxes ?? []
 
   // In box mode, mask the image so only the box regions stay visible.
-  // Each box becomes one opaque rectangle in the mask; everything else is hidden.
   let maskStyle = {}
   if (boxMode && boxes.length > 0 && imgSize.w > 0) {
     const layers = boxes.map(() => 'linear-gradient(#000 0 0)').join(',')
@@ -73,15 +72,14 @@ export default function App() {
     <div className="w-screen h-screen relative pointer-events-none">
       {currentImage && (
         <div className="absolute inset-0 flex flex-col items-start justify-start">
-          <div className="relative select-none" style={{ width: '100%' }}>
+          <div className="relative select-none" style={{ width: '100%', opacity }}>
 
-            {/* Image + annotations composited together, then masked to box
-                regions when in box mode (so annotations get cropped too). */}
+            {/* Image + annotations */}
             <div className="relative" style={{ width: '100%', ...maskStyle }}>
               <img
                 ref={imgRef}
                 src={currentImage.url}
-                style={{ opacity, width: '100%', height: 'auto', display: 'block' }}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
                 draggable={false}
               />
 
@@ -117,7 +115,7 @@ export default function App() {
               )}
             </div>
 
-            {/* Box borders — always drawn, both modes, on top of the crop */}
+            {/* Box borders */}
             {imgSize.w > 0 && boxes.map((box, i) => (
               <div
                 key={box.id ?? i}
