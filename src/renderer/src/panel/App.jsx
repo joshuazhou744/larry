@@ -31,6 +31,13 @@ export default function App() {
   )
 
   useEffect(() => {
+    window.api.onOpacityChanged((val) => {
+      setScreenshotOpacity(val)
+      localStorage.setItem('screenshot-opacity', val)
+    })
+  }, [])
+
+  useEffect(() => {
     async function load() {
       try {
         const [[a, m], dbLineups] = await Promise.all([
@@ -79,10 +86,14 @@ export default function App() {
   async function handleLineupSelect(lineupId) {
     setSelectedLineupId(lineupId)
     if (!lineupId) return
+    const lineup = lineups.find(l => l.id === lineupId)
     try {
       const images = await fetchImages(lineupId)
       if (images.length > 0) {
-        window.api.showLineupScreenshots(images.map(img => img.publicUrl), screenshotOpacity)
+          window.api.showLineupScreenshots(
+          images.map(img => ({ url: img.publicUrl, annotations: img.annotations ?? [] })),
+          screenshotOpacity
+        )
       }
     } catch (e) {
       console.error('fetchImages failed:', e)

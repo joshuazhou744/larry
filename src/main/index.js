@@ -16,9 +16,11 @@ let appMode = 'hidden'
 let lastMode = 'panel'
 let lastScreenshotData = null
 
-let toggleHotkey = 'Alt+L'
-let cycleHotkey  = 'Alt+N'
-let exitHotkey   = 'Alt+X'
+let toggleHotkey          = 'Alt+L'
+let cycleHotkey           = 'Alt+N'
+let exitHotkey            = 'Alt+X'
+let decreaseOpacityHotkey = 'Alt+J'
+let increaseOpacityHotkey = 'Alt+K'
 
 function createOverlay() {
   overlayWindow = new BrowserWindow({
@@ -67,16 +69,23 @@ function hidePanel() {
   appMode = 'hidden'
 }
 
-function enterScreenshotMode(urls, opacity, index = 0) {
+// images: { url, annotations }[]
+function enterScreenshotMode(images, opacity, index = 0) {
   panelWindow.hide()
-  overlayWindow.webContents.send('show-screenshots', { urls, opacity, index })
+  overlayWindow.webContents.send('show-screenshots', { images, opacity, index })
   appMode = 'screenshot'
-  lastScreenshotData = { urls, opacity, index }
+  lastScreenshotData = { images, opacity, index }
 }
 
 function exitScreenshotMode() {
-  overlayWindow.webContents.send('show-screenshots', { urls: [], opacity: 1 })
+  overlayWindow.webContents.send('show-screenshots', { images: [] })
   showPanel()
+}
+
+function broadcastOpacity(next) {
+  lastScreenshotData.opacity = next
+  overlayWindow.webContents.send('set-opacity', next)
+  panelWindow.webContents.send('opacity-changed', next)
 }
 
 function blockDevTools(win) {
@@ -96,7 +105,7 @@ app.whenReady().then(() => {
     if (panelWindow.isDestroyed()) return
     if (appMode === 'hidden') {
       if (lastMode === 'screenshot' && lastScreenshotData) {
-        enterScreenshotMode(lastScreenshotData.urls, lastScreenshotData.opacity, lastScreenshotData.index ?? 0)
+        enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0)
       } else {
         showPanel()
       }
@@ -105,7 +114,7 @@ app.whenReady().then(() => {
       hidePanel()
     } else { // screenshot
       lastMode = 'screenshot'
-      overlayWindow.webContents.send('show-screenshots', { urls: [], opacity: 1 })
+      overlayWindow.webContents.send('show-screenshots', { images: [] })
       appMode = 'hidden'
     }
   })
@@ -116,6 +125,16 @@ app.whenReady().then(() => {
 
   globalShortcut.register(exitHotkey, () => {
     if (appMode === 'screenshot') exitScreenshotMode()
+  })
+
+  globalShortcut.register(decreaseOpacityHotkey, () => {
+    if (appMode !== 'screenshot' || !lastScreenshotData) return
+    broadcastOpacity(Math.max(0.1, parseFloat((lastScreenshotData.opacity - 0.05).toFixed(2))))
+  })
+
+  globalShortcut.register(increaseOpacityHotkey, () => {
+    if (appMode !== 'screenshot' || !lastScreenshotData) return
+    broadcastOpacity(Math.min(1.0, parseFloat((lastScreenshotData.opacity + 0.05).toFixed(2))))
   })
 })
 
@@ -129,8 +148,8 @@ ipcMain.on('screenshot-index', (_, i) => {
   if (lastScreenshotData) lastScreenshotData.index = i
 })
 
-ipcMain.on('show-lineup-screenshots', (_, { urls, opacity }) => {
-  if (urls.length > 0) enterScreenshotMode(urls, opacity)
+ipcMain.on('show-lineup-screenshots', (_, { images, opacity }) => {
+  if (images.length > 0) enterScreenshotMode(images, opacity)
 })
 
 ipcMain.on('set-hotkey', (_, newKey) => {
@@ -139,12 +158,12 @@ ipcMain.on('set-hotkey', (_, newKey) => {
   globalShortcut.register(toggleHotkey, () => {
     if (panelWindow.isDestroyed()) return
     if (appMode === 'hidden') {
-      if (lastMode === 'screenshot' && lastScreenshotData) { enterScreenshotMode(lastScreenshotData.urls, lastScreenshotData.opacity) }
+      if (lastMode === 'screenshot' && lastScreenshotData) { enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0) }
       else { showPanel() }
     } else if (appMode === 'panel') {
       lastMode = 'panel'; hidePanel()
     } else {
-      lastMode = 'screenshot'; overlayWindow.webContents.send('show-screenshots', { urls: [], opacity: 1 }); appMode = 'hidden'
+      lastMode = 'screenshot'; overlayWindow.webContents.send('show-screenshots', { images: [] }); appMode = 'hidden'
     }
   })
 })
@@ -162,5 +181,23 @@ ipcMain.on('set-exit-hotkey', (_, newKey) => {
   exitHotkey = newKey
   globalShortcut.register(exitHotkey, () => {
     if (appMode === 'screenshot') exitScreenshotMode()
+  })
+})
+
+ipcMain.on('set-decrease-opacity-hotkey', (_, newKey) => {
+  globalShortcut.unregister(decreaseOpacityHotkey)
+  decreaseOpacityHotkey = newKey
+  globalShortcut.register(decreaseOpacityHotkey, () => {
+    if (appMode !== 'screenshot' || !lastScreenshotData) return
+    broadcastOpacity(Math.max(0.1, parseFloat((lastScreenshotData.opacity - 0.05).toFixed(2))))
+  })
+})
+
+ipcMain.on('set-increase-opacity-hotkey', (_, newKey) => {
+  globalShortcut.unregister(increaseOpacityHotkey)
+  increaseOpacityHotkey = newKey
+  globalShortcut.register(increaseOpacityHotkey, () => {
+    if (appMode !== 'screenshot' || !lastScreenshotData) return
+    broadcastOpacity(Math.min(1.0, parseFloat((lastScreenshotData.opacity + 0.05).toFixed(2))))
   })
 })

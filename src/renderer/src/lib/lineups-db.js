@@ -40,6 +40,7 @@ export async function fetchImages(lineupId) {
     lineupId: row.lineup_id,
     storagePath: row.storage_path,
     publicUrl: getPublicUrl(row.storage_path),
+    annotations: row.annotations ?? [],
     sortOrder: row.sort_order,
   }))
 }

@@ -19,18 +19,24 @@ export default function SettingsModal({ onClose, screenshotOpacity, onOpacityCha
         <div className="p-4 flex flex-col gap-6">
 
           <SettingsSection label="Keybinds (must start with Alt)">
-            <SettingRow label="Toggle larry">
+            <SettingRow label="Toggle Larry">
               <HotkeyInput defaultKey="Alt+L" onCommit={(k) => window.api.setHotkey(k)} />
             </SettingRow>
-            <SettingRow label="Cycle screenshot in overlay mode">
+            <SettingRow label="Cycle overlay">
               <HotkeyInput defaultKey="Alt+N" onCommit={(k) => window.api.setCycleHotkey(k)} />
             </SettingRow>
             <SettingRow label="Exit overlay mode">
               <HotkeyInput defaultKey="Alt+X" onCommit={(k) => window.api.setExitHotkey(k)} />
             </SettingRow>
+            <SettingRow label="Decrease opacity">
+              <HotkeyInput defaultKey="Alt+J" onCommit={(k) => window.api.setDecreaseOpacityHotkey(k)} />
+            </SettingRow>
+            <SettingRow label="Increase opacity">
+              <HotkeyInput defaultKey="Alt+K" onCommit={(k) => window.api.setIncreaseOpacityHotkey(k)} />
+            </SettingRow>
           </SettingsSection>
 
-          <SettingsSection label="Screenshot overlay">
+          <SettingsSection label="Overlay">
             <SettingRow label={`Opacity — ${Math.round(screenshotOpacity * 100)}%`}>
               <input
                 type="range"

@@ -10,12 +10,16 @@ contextBridge.exposeInMainWorld('api', {
   setHotkey:  (key) => ipcRenderer.send('set-hotkey', key),
 
   // Screenshot overlay
-  showLineupScreenshots: (urls, opacity) => ipcRenderer.send('show-lineup-screenshots', { urls, opacity }),
+  showLineupScreenshots: (images, opacity) => ipcRenderer.send('show-lineup-screenshots', { images, opacity }),
   setCycleHotkey: (key) => ipcRenderer.send('set-cycle-hotkey', key),
   setExitHotkey:  (key) => ipcRenderer.send('set-exit-hotkey', key),
 
   // Overlay → renderer
-  onShowScreenshots:      (cb) => ipcRenderer.on('show-screenshots', (_, data) => cb(data)),
-  onNextScreenshot:       (cb) => ipcRenderer.on('next-screenshot', () => cb()),
-  reportScreenshotIndex:  (i)  => ipcRenderer.send('screenshot-index', i),
+  onShowScreenshots:          (cb) => ipcRenderer.on('show-screenshots', (_, data) => cb(data)),
+  onNextScreenshot:           (cb) => ipcRenderer.on('next-screenshot', () => cb()),
+  onSetOpacity:               (cb) => ipcRenderer.on('set-opacity', (_, val) => cb(val)),
+  onOpacityChanged:           (cb) => ipcRenderer.on('opacity-changed', (_, val) => cb(val)),
+  reportScreenshotIndex:      (i)  => ipcRenderer.send('screenshot-index', i),
+  setDecreaseOpacityHotkey:   (k)  => ipcRenderer.send('set-decrease-opacity-hotkey', k),
+  setIncreaseOpacityHotkey:   (k)  => ipcRenderer.send('set-increase-opacity-hotkey', k),
 })
