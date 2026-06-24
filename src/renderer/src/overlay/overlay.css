@@ -1,1 +1,8 @@
-@import "tailwindcss";
+@import "../styles/globals.css";
+
+/* Overlay body must be transparent — overrides globals.css body background */
+body {
+  background: transparent !important;
+  overflow: hidden;
+  height: 100vh;
+}

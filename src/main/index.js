@@ -1,9 +1,16 @@
 import { app, BrowserWindow, globalShortcut, ipcMain } from 'electron'
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
+import koffi from 'koffi'
+
+// Win32 — save/restore foreground window across panel toggle
+const user32 = koffi.load('user32.dll')
+const GetForegroundWindow = user32.func('void * GetForegroundWindow()')
+const SetForegroundWindow = user32.func('bool SetForegroundWindow(void *hwnd)')
 
 let overlayWindow = null
 let panelWindow = null
+let savedForegroundHwnd = null
 
 function createOverlay() {
   overlayWindow = new BrowserWindow({
@@ -30,15 +37,22 @@ function createOverlay() {
 
 function createPanel() {
   panelWindow = new BrowserWindow({
-    width: 380,
-    height: 580,
+    width: 900,
+    height: 720,
     show: false,          // hidden until Alt+L
     alwaysOnTop: true,
-    resizable: false,
+    resizable: true,
+    frame: false,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     }
+  })
+
+  // Hide instead of destroy on close (Ctrl+W, close button, etc.)
+  panelWindow.on('close', (e) => {
+    e.preventDefault()
+    hidePanel()
   })
 
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -54,9 +68,11 @@ app.whenReady().then(() => {
 
   // Alt+L toggles the panel — works even when game is focused
   globalShortcut.register('Alt+L', () => {
+    if (panelWindow.isDestroyed()) return
     if (panelWindow.isVisible()) {
-      panelWindow.hide()
+      hidePanel()
     } else {
+      savedForegroundHwnd = GetForegroundWindow()  // save before stealing focus
       panelWindow.show()
       panelWindow.focus()
     }
@@ -71,3 +87,15 @@ app.on('will-quit', () => {
 ipcMain.on('set-lineup', (_, data) => {
   overlayWindow.webContents.send('render-lineup', data)
 })
+
+// Custom titlebar window controls
+
+ipcMain.on('panel-hide', () => hidePanel())
+
+function hidePanel() {
+  panelWindow.hide()
+  if (savedForegroundHwnd) {
+    SetForegroundWindow(savedForegroundHwnd)
+    savedForegroundHwnd = null
+  }
+}

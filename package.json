@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@electron-toolkit/utils": "^3.0.0",
-    "electron": "^32.0.0"
+    "@tabler/icons-react": "^3.44.0",
+    "electron": "^32.0.0",
+    "koffi": "^3.0.2"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",

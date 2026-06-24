@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* ── Color tokens ─────────────────────────────────────────── */
+:root {
+  --bg-base:       hsl(220 30%  4%);   /* app background */
+  --bg-surface:    hsl(218 26%  8%);   /* cards, panels */
+  --bg-titlebar:   hsl(218 26%  7%);   /* titlebar */
+  --bg-item:       hsl(217 22% 14%);   /* list items, inputs */
+
+  --border:        hsl(216 24% 14%);   /* dividers, borders */
+
+  --text-primary:  hsl(210 20% 92%);   /* main text */
+  --text-muted:    hsl(215 14% 55%);   /* labels, hints */
+  --text-dim:      hsl(215 14% 35%);   /* very faint text */
+
+  --accent-red:    hsl(354 100% 63%);  /* VALORANT red — title, highlights */
+  --accent-teal:   hsl(174  80% 45%);  /* secondary accent */
+}
+
+/* ── Base ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: "Rajdhani", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  height: 100vh;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Oswald", "Rajdhani", sans-serif;
+}
+
+/* ── Utility classes ──────────────────────────────────────── */
+.dot-grid {
+  background-color: hsl(220 35% 3.5%);
+  background-image: radial-gradient(hsl(210 30% 30% / 0.18) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+.sidebar {
+  background: linear-gradient(180deg, hsl(218 26% 9%), hsl(218 28% 6.5%));
+  border-left: 1px solid var(--border);
+}
+
+/* ── Scrollbars ───────────────────────────────────────────── */
+::-webkit-scrollbar              { width: 6px; }
+::-webkit-scrollbar-track        { background: transparent; }
+::-webkit-scrollbar-thumb        { background: hsl(216 24% 18%); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover  { background: hsl(354 100% 63% / 0.5); }
