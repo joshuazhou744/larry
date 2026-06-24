@@ -31,7 +31,6 @@ export default function App() {
       setCurrentIndex(i => {
         const next = (i + 1) % (imagesRef.current.length || 1)
         window.api.reportScreenshotIndex(next)
-        setImgSize({ w: 0, h: 0 })
         return next
       })
     })
