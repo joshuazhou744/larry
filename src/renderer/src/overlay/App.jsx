@@ -4,7 +4,6 @@ export default function App() {
   const [images, setImages] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [opacity, setOpacity] = useState(0.85)
-  const [notes, setNotes] = useState('')
   const [imgSize, setImgSize] = useState({ w: 0, h: 0 })
   const [boxMode, setBoxMode] = useState(false)
   const imagesRef = useRef([])
@@ -14,11 +13,10 @@ export default function App() {
   useEffect(() => {
     window.api.onRenderLineup(() => {})
 
-    window.api.onShowScreenshots(({ images: imgs = [], opacity: op, index = 0, notes: n = '', boxMode: bm = false }) => {
+    window.api.onShowScreenshots(({ images: imgs = [], opacity: op, index = 0, boxMode: bm = false }) => {
       setImages(imgs)
       setCurrentIndex(index)
       setOpacity(op)
-      setNotes(n)
       setBoxMode(bm)
       setImgSize({ w: 0, h: 0 })
     })
@@ -136,7 +134,7 @@ export default function App() {
             {images.length > 1 && (
               <span style={{ opacity: 0.7 }}>{currentIndex + 1} / {images.length}</span>
             )}
-            {notes && <span>{notes}</span>}
+            {currentImage?.note && <span>{currentImage.note}</span>}
           </div>
         </div>
       )}

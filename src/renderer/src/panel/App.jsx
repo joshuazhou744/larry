@@ -91,9 +91,8 @@ export default function App() {
       const images = await fetchImages(lineupId)
       if (images.length > 0) {
           window.api.showLineupScreenshots(
-          images.map(img => ({ url: img.publicUrl, annotations: img.annotations ?? [], boxes: img.boxes ?? [] })),
-          screenshotOpacity,
-          lineup?.notes ?? ''
+          images.map(img => ({ url: img.publicUrl, annotations: img.annotations ?? [], boxes: img.boxes ?? [], note: img.note ?? '' })),
+          screenshotOpacity
         )
       }
     } catch (e) {

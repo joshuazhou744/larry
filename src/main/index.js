@@ -30,7 +30,7 @@ function toggleApp() {
   if (panelWindow.isDestroyed()) return
   if (appMode === 'hidden') {
     if (lastMode === 'screenshot' && lastScreenshotData) {
-      enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0, lastScreenshotData.notes ?? '', lastScreenshotData.boxMode ?? false)
+      enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0, lastScreenshotData.boxMode ?? false)
     } else {
       showPanel()
     }
@@ -122,13 +122,13 @@ function hidePanel() {
   appMode = 'hidden'
 }
 
-// images: { url, annotations, boxes }[]
-function enterScreenshotMode(images, opacity, index = 0, notes = '', savedBoxMode = false) {
+// images: { url, annotations, boxes, note }[]
+function enterScreenshotMode(images, opacity, index = 0, savedBoxMode = false) {
   boxMode = savedBoxMode
   panelWindow.hide()
-  overlayWindow.webContents.send('show-screenshots', { images, opacity, index, notes, boxMode })
+  overlayWindow.webContents.send('show-screenshots', { images, opacity, index, boxMode })
   appMode = 'screenshot'
-  lastScreenshotData = { images, opacity, index, notes, boxMode }
+  lastScreenshotData = { images, opacity, index, boxMode }
 }
 
 function exitScreenshotMode() {
@@ -173,8 +173,8 @@ ipcMain.on('screenshot-index', (_, i) => {
   if (lastScreenshotData) lastScreenshotData.index = i
 })
 
-ipcMain.on('show-lineup-screenshots', (_, { images, opacity, notes = '' }) => {
-  if (images.length > 0) enterScreenshotMode(images, opacity, 0, notes)
+ipcMain.on('show-lineup-screenshots', (_, { images, opacity }) => {
+  if (images.length > 0) enterScreenshotMode(images, opacity)
 })
 
 ipcMain.on('set-hotkey', (_, newKey) => {
