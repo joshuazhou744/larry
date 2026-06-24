@@ -39,6 +39,8 @@ function createPanel() {
   panelWindow = new BrowserWindow({
     width: 900,
     height: 720,
+    minWidth: 520,
+    minHeight: 380,
     show: false,          // hidden until Alt+L
     alwaysOnTop: true,
     resizable: true,
@@ -91,6 +93,22 @@ ipcMain.on('set-lineup', (_, data) => {
 // Custom titlebar window controls
 
 ipcMain.on('panel-hide', () => hidePanel())
+
+let currentHotkey = 'Alt+L'
+ipcMain.on('set-hotkey', (_, newKey) => {
+  globalShortcut.unregister(currentHotkey)
+  currentHotkey = newKey
+  globalShortcut.register(currentHotkey, () => {
+    if (panelWindow.isDestroyed()) return
+    if (panelWindow.isVisible()) {
+      hidePanel()
+    } else {
+      savedForegroundHwnd = GetForegroundWindow()
+      panelWindow.show()
+      panelWindow.focus()
+    }
+  })
+})
 
 function hidePanel() {
   panelWindow.hide()

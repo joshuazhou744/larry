@@ -6,5 +6,6 @@ contextBridge.exposeInMainWorld('api', {
   onRenderLineup: (callback) => ipcRenderer.on('render-lineup', (_, data) => callback(data)),
 
   // Custom titlebar controls
-  hide:     () => ipcRenderer.send('panel-hide'),
+  hide:         () => ipcRenderer.send('panel-hide'),
+  setHotkey:    (key) => ipcRenderer.send('set-hotkey', key),
 })

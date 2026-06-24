@@ -13,8 +13,11 @@
   --text-muted:    hsl(215 14% 55%);   /* labels, hints */
   --text-dim:      hsl(215 14% 35%);   /* very faint text */
 
-  --accent-red:    hsl(354 100% 63%);  /* VALORANT red — title, highlights */
-  --accent-teal:   hsl(174  80% 45%);  /* secondary accent */
+  --accent-red:        hsl(354 100% 63%);       /* VALORANT red — title, highlights */
+  --accent-red-dim:    hsl(354 100% 63% / 0.08); /* faint red tint — active inputs */
+  --accent-red-hover:  hsl(354 100% 63% / 0.15); /* red hover state */
+  --accent-teal:       hsl(174  80% 45%);         /* secondary accent */
+  --bg-overlay:        hsl(220 30%  4% / 0.85);   /* modal backdrop */
 }
 
 /* ── Base ─────────────────────────────────────────────────── */
