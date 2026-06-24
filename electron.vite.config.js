@@ -11,10 +11,14 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()]
   },
   renderer: {
-    // Two separate windows, each with their own HTML entry point
-    input: {
-      overlay: resolve(__dirname, 'src/renderer/overlay.html'),
-      panel:   resolve(__dirname, 'src/renderer/panel.html'),
+    build: {
+      rollupOptions: {
+        // Two separate windows, each with their own HTML entry point
+        input: {
+          overlay: resolve(__dirname, 'src/renderer/overlay.html'),
+          panel:   resolve(__dirname, 'src/renderer/panel.html'),
+        }
+      }
     },
     plugins: [react(), tailwindcss()]
   }
