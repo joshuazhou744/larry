@@ -10,12 +10,13 @@ contextBridge.exposeInMainWorld('api', {
   setHotkey:  (key) => ipcRenderer.send('set-hotkey', key),
 
   // Screenshot overlay
-  showLineupScreenshots: (images, opacity) => ipcRenderer.send('show-lineup-screenshots', { images, opacity }),
+  showLineupScreenshots: (images, opacity, notes) => ipcRenderer.send('show-lineup-screenshots', { images, opacity, notes }),
   setCycleHotkey: (key) => ipcRenderer.send('set-cycle-hotkey', key),
   setExitHotkey:  (key) => ipcRenderer.send('set-exit-hotkey', key),
 
   // Overlay → renderer
   onShowScreenshots:          (cb) => ipcRenderer.on('show-screenshots', (_, data) => cb(data)),
+  onBoxMode:                  (cb) => ipcRenderer.on('box-mode', (_, val) => cb(val)),
   onNextScreenshot:           (cb) => ipcRenderer.on('next-screenshot', () => cb()),
   onSetOpacity:               (cb) => ipcRenderer.on('set-opacity', (_, val) => cb(val)),
   onOpacityChanged:           (cb) => ipcRenderer.on('opacity-changed', (_, val) => cb(val)),

@@ -41,6 +41,7 @@ export async function fetchImages(lineupId) {
     storagePath: row.storage_path,
     publicUrl: getPublicUrl(row.storage_path),
     annotations: row.annotations ?? [],
+    boxes: row.boxes ?? [],
     sortOrder: row.sort_order,
   }))
 }

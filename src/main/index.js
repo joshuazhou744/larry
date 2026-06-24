@@ -21,6 +21,7 @@ let cycleHotkey           = 'Alt+N'
 let exitHotkey            = 'Alt+X'
 let decreaseOpacityHotkey = 'Alt+J'
 let increaseOpacityHotkey = 'Alt+K'
+let boxMode = false
 
 function createOverlay() {
   overlayWindow = new BrowserWindow({
@@ -69,12 +70,13 @@ function hidePanel() {
   appMode = 'hidden'
 }
 
-// images: { url, annotations }[]
-function enterScreenshotMode(images, opacity, index = 0) {
+// images: { url, annotations, boxes }[]
+function enterScreenshotMode(images, opacity, index = 0, notes = '') {
+  boxMode = false
   panelWindow.hide()
-  overlayWindow.webContents.send('show-screenshots', { images, opacity, index })
+  overlayWindow.webContents.send('show-screenshots', { images, opacity, index, notes })
   appMode = 'screenshot'
-  lastScreenshotData = { images, opacity, index }
+  lastScreenshotData = { images, opacity, index, notes }
 }
 
 function exitScreenshotMode() {
@@ -105,7 +107,7 @@ app.whenReady().then(() => {
     if (panelWindow.isDestroyed()) return
     if (appMode === 'hidden') {
       if (lastMode === 'screenshot' && lastScreenshotData) {
-        enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0)
+        enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0, lastScreenshotData.notes ?? '')
       } else {
         showPanel()
       }
@@ -125,6 +127,12 @@ app.whenReady().then(() => {
 
   globalShortcut.register(exitHotkey, () => {
     if (appMode === 'screenshot') exitScreenshotMode()
+  })
+
+  globalShortcut.register('Alt+B', () => {
+    if (appMode !== 'screenshot') return
+    boxMode = !boxMode
+    overlayWindow.webContents.send('box-mode', boxMode)
   })
 
   globalShortcut.register(decreaseOpacityHotkey, () => {
@@ -148,8 +156,8 @@ ipcMain.on('screenshot-index', (_, i) => {
   if (lastScreenshotData) lastScreenshotData.index = i
 })
 
-ipcMain.on('show-lineup-screenshots', (_, { images, opacity }) => {
-  if (images.length > 0) enterScreenshotMode(images, opacity)
+ipcMain.on('show-lineup-screenshots', (_, { images, opacity, notes = '' }) => {
+  if (images.length > 0) enterScreenshotMode(images, opacity, 0, notes)
 })
 
 ipcMain.on('set-hotkey', (_, newKey) => {
@@ -158,7 +166,7 @@ ipcMain.on('set-hotkey', (_, newKey) => {
   globalShortcut.register(toggleHotkey, () => {
     if (panelWindow.isDestroyed()) return
     if (appMode === 'hidden') {
-      if (lastMode === 'screenshot' && lastScreenshotData) { enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0) }
+      if (lastMode === 'screenshot' && lastScreenshotData) { enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0, lastScreenshotData.notes ?? '') }
       else { showPanel() }
     } else if (appMode === 'panel') {
       lastMode = 'panel'; hidePanel()
