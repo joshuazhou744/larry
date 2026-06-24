@@ -16,12 +16,63 @@ let appMode = 'hidden'
 let lastMode = 'panel'
 let lastScreenshotData = null
 
-let toggleHotkey          = 'Alt+L'
+let toggleAppHotkey       = 'Alt+L'
 let cycleHotkey           = 'Alt+N'
 let exitHotkey            = 'Alt+X'
 let decreaseOpacityHotkey = 'Alt+J'
 let increaseOpacityHotkey = 'Alt+K'
+let boxModeHotkey         = 'Alt+B'
 let boxMode = false
+
+// Shortcut handlers
+
+function toggleApp() {
+  if (panelWindow.isDestroyed()) return
+  if (appMode === 'hidden') {
+    if (lastMode === 'screenshot' && lastScreenshotData) {
+      enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0, lastScreenshotData.notes ?? '')
+    } else {
+      showPanel()
+    }
+  } else if (appMode === 'panel') {
+    lastMode = 'panel'
+    hidePanel()
+  } else { // screenshot
+    lastMode = 'screenshot'
+    overlayWindow.webContents.send('show-screenshots', { images: [] })
+    appMode = 'hidden'
+  }
+}
+
+function cycleOverlay() {
+  if (appMode === 'screenshot') overlayWindow.webContents.send('next-screenshot')
+}
+
+function exitOverlay() {
+  if (appMode === 'screenshot') exitScreenshotMode()
+}
+
+function toggleBoxMode() {
+  if (appMode !== 'screenshot') return
+  boxMode = !boxMode
+  overlayWindow.webContents.send('box-mode', boxMode)
+}
+
+function decreaseOpacity() {
+  if (appMode !== 'screenshot' || !lastScreenshotData) return
+  broadcastOpacity(Math.max(0.1, parseFloat((lastScreenshotData.opacity - 0.05).toFixed(2))))
+}
+
+function increaseOpacity() {
+  if (appMode !== 'screenshot' || !lastScreenshotData) return
+  broadcastOpacity(Math.min(1.0, parseFloat((lastScreenshotData.opacity + 0.05).toFixed(2))))
+}
+
+// Re-bind a global shortcut to a new key, reusing the same handler.
+function rebind(oldKey, newKey, handler) {
+  globalShortcut.unregister(oldKey)
+  globalShortcut.register(newKey, handler)
+}
 
 function createOverlay() {
   overlayWindow = new BrowserWindow({
@@ -103,47 +154,12 @@ app.whenReady().then(() => {
   createOverlay()
   createPanel()
 
-  globalShortcut.register(toggleHotkey, () => {
-    if (panelWindow.isDestroyed()) return
-    if (appMode === 'hidden') {
-      if (lastMode === 'screenshot' && lastScreenshotData) {
-        enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0, lastScreenshotData.notes ?? '')
-      } else {
-        showPanel()
-      }
-    } else if (appMode === 'panel') {
-      lastMode = 'panel'
-      hidePanel()
-    } else { // screenshot
-      lastMode = 'screenshot'
-      overlayWindow.webContents.send('show-screenshots', { images: [] })
-      appMode = 'hidden'
-    }
-  })
-
-  globalShortcut.register(cycleHotkey, () => {
-    if (appMode === 'screenshot') overlayWindow.webContents.send('next-screenshot')
-  })
-
-  globalShortcut.register(exitHotkey, () => {
-    if (appMode === 'screenshot') exitScreenshotMode()
-  })
-
-  globalShortcut.register('Alt+B', () => {
-    if (appMode !== 'screenshot') return
-    boxMode = !boxMode
-    overlayWindow.webContents.send('box-mode', boxMode)
-  })
-
-  globalShortcut.register(decreaseOpacityHotkey, () => {
-    if (appMode !== 'screenshot' || !lastScreenshotData) return
-    broadcastOpacity(Math.max(0.1, parseFloat((lastScreenshotData.opacity - 0.05).toFixed(2))))
-  })
-
-  globalShortcut.register(increaseOpacityHotkey, () => {
-    if (appMode !== 'screenshot' || !lastScreenshotData) return
-    broadcastOpacity(Math.min(1.0, parseFloat((lastScreenshotData.opacity + 0.05).toFixed(2))))
-  })
+  globalShortcut.register(toggleAppHotkey, toggleApp)
+  globalShortcut.register(cycleHotkey, cycleOverlay)
+  globalShortcut.register(exitHotkey, exitOverlay)
+  globalShortcut.register(boxModeHotkey, toggleBoxMode)
+  globalShortcut.register(decreaseOpacityHotkey, decreaseOpacity)
+  globalShortcut.register(increaseOpacityHotkey, increaseOpacity)
 })
 
 app.on('will-quit', () => { globalShortcut.unregisterAll() })
@@ -161,51 +177,31 @@ ipcMain.on('show-lineup-screenshots', (_, { images, opacity, notes = '' }) => {
 })
 
 ipcMain.on('set-hotkey', (_, newKey) => {
-  globalShortcut.unregister(toggleHotkey)
-  toggleHotkey = newKey
-  globalShortcut.register(toggleHotkey, () => {
-    if (panelWindow.isDestroyed()) return
-    if (appMode === 'hidden') {
-      if (lastMode === 'screenshot' && lastScreenshotData) { enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0, lastScreenshotData.notes ?? '') }
-      else { showPanel() }
-    } else if (appMode === 'panel') {
-      lastMode = 'panel'; hidePanel()
-    } else {
-      lastMode = 'screenshot'; overlayWindow.webContents.send('show-screenshots', { images: [] }); appMode = 'hidden'
-    }
-  })
+  rebind(toggleAppHotkey, newKey, toggleApp)
+  toggleAppHotkey = newKey
 })
 
 ipcMain.on('set-cycle-hotkey', (_, newKey) => {
-  globalShortcut.unregister(cycleHotkey)
+  rebind(cycleHotkey, newKey, cycleOverlay)
   cycleHotkey = newKey
-  globalShortcut.register(cycleHotkey, () => {
-    if (appMode === 'screenshot') overlayWindow.webContents.send('next-screenshot')
-  })
 })
 
 ipcMain.on('set-exit-hotkey', (_, newKey) => {
-  globalShortcut.unregister(exitHotkey)
+  rebind(exitHotkey, newKey, exitOverlay)
   exitHotkey = newKey
-  globalShortcut.register(exitHotkey, () => {
-    if (appMode === 'screenshot') exitScreenshotMode()
-  })
 })
 
 ipcMain.on('set-decrease-opacity-hotkey', (_, newKey) => {
-  globalShortcut.unregister(decreaseOpacityHotkey)
+  rebind(decreaseOpacityHotkey, newKey, decreaseOpacity)
   decreaseOpacityHotkey = newKey
-  globalShortcut.register(decreaseOpacityHotkey, () => {
-    if (appMode !== 'screenshot' || !lastScreenshotData) return
-    broadcastOpacity(Math.max(0.1, parseFloat((lastScreenshotData.opacity - 0.05).toFixed(2))))
-  })
 })
 
 ipcMain.on('set-increase-opacity-hotkey', (_, newKey) => {
-  globalShortcut.unregister(increaseOpacityHotkey)
+  rebind(increaseOpacityHotkey, newKey, increaseOpacity)
   increaseOpacityHotkey = newKey
-  globalShortcut.register(increaseOpacityHotkey, () => {
-    if (appMode !== 'screenshot' || !lastScreenshotData) return
-    broadcastOpacity(Math.min(1.0, parseFloat((lastScreenshotData.opacity + 0.05).toFixed(2))))
-  })
+})
+
+ipcMain.on('set-box-mode-hotkey', (_, newKey) => {
+  rebind(boxModeHotkey, newKey, toggleBoxMode)
+  boxModeHotkey = newKey
 })
