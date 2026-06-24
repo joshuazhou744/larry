@@ -14,12 +14,12 @@ export default function App() {
   useEffect(() => {
     window.api.onRenderLineup(() => {})
 
-    window.api.onShowScreenshots(({ images: imgs = [], opacity: op, index = 0, notes: n = '' }) => {
+    window.api.onShowScreenshots(({ images: imgs = [], opacity: op, index = 0, notes: n = '', boxMode: bm = false }) => {
       setImages(imgs)
       setCurrentIndex(index)
       setOpacity(op)
       setNotes(n)
-      setBoxMode(false)
+      setBoxMode(bm)
       setImgSize({ w: 0, h: 0 })
     })
 

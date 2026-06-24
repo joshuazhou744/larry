@@ -28,13 +28,13 @@ export default function SettingsModal({ onClose, screenshotOpacity, onOpacityCha
             <SettingRow label="Exit overlay mode">
               <HotkeyInput defaultKey="Alt+X" onCommit={(k) => window.api.setExitHotkey(k)} />
             </SettingRow>
-            <SettingRow label="Decrease opacity">
+            <SettingRow label="Decrease overlay opacity">
               <HotkeyInput defaultKey="Alt+J" onCommit={(k) => window.api.setDecreaseOpacityHotkey(k)} />
             </SettingRow>
-            <SettingRow label="Increase opacity">
+            <SettingRow label="Increase overlay opacity">
               <HotkeyInput defaultKey="Alt+K" onCommit={(k) => window.api.setIncreaseOpacityHotkey(k)} />
             </SettingRow>
-            <SettingRow label="Box mode toggle">
+            <SettingRow label="Toggle box mode">
               <HotkeyInput defaultKey="Alt+B" onCommit={(k) => window.api.setBoxModeHotkey(k)} />
             </SettingRow>
           </SettingsSection>

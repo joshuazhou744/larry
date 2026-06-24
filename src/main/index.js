@@ -30,7 +30,7 @@ function toggleApp() {
   if (panelWindow.isDestroyed()) return
   if (appMode === 'hidden') {
     if (lastMode === 'screenshot' && lastScreenshotData) {
-      enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0, lastScreenshotData.notes ?? '')
+      enterScreenshotMode(lastScreenshotData.images, lastScreenshotData.opacity, lastScreenshotData.index ?? 0, lastScreenshotData.notes ?? '', lastScreenshotData.boxMode ?? false)
     } else {
       showPanel()
     }
@@ -55,6 +55,7 @@ function exitOverlay() {
 function toggleBoxMode() {
   if (appMode !== 'screenshot') return
   boxMode = !boxMode
+  if (lastScreenshotData) lastScreenshotData.boxMode = boxMode
   overlayWindow.webContents.send('box-mode', boxMode)
 }
 
@@ -122,12 +123,12 @@ function hidePanel() {
 }
 
 // images: { url, annotations, boxes }[]
-function enterScreenshotMode(images, opacity, index = 0, notes = '') {
-  boxMode = false
+function enterScreenshotMode(images, opacity, index = 0, notes = '', savedBoxMode = false) {
+  boxMode = savedBoxMode
   panelWindow.hide()
-  overlayWindow.webContents.send('show-screenshots', { images, opacity, index, notes })
+  overlayWindow.webContents.send('show-screenshots', { images, opacity, index, notes, boxMode })
   appMode = 'screenshot'
-  lastScreenshotData = { images, opacity, index, notes }
+  lastScreenshotData = { images, opacity, index, notes, boxMode }
 }
 
 function exitScreenshotMode() {
