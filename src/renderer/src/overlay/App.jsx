@@ -11,8 +11,8 @@ export default function App() {
 
   return (
     <div className="w-screen h-screen relative pointer-events-none">
-      {/* Test marker — red crosshair in center, remove once real lineups are wired up */}
-      <div
+      {/* Test crosshair in center, remove once real lineups are wired up */}
+      {/* <div
         className="absolute w-6 h-6 rounded-full border-2 border-red-500"
         style={{
           left: '50%',
@@ -20,7 +20,7 @@ export default function App() {
           transform: 'translate(-50%, -50%)',
           opacity: 0.85
         }}
-      />
+      /> */}
 
       {markers.map((marker, i) => (
         <div
