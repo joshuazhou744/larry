@@ -102,8 +102,16 @@ async function clipMedal() {
     },
     body: JSON.stringify(payload)
   })
-  const text = await response.text()
-  console.log('[medal] status:', response.status, text)
+  const text = await response.json()
+  if (response.status == 200) {
+    if (text.message.startsWith("Event received but not processed.")) {
+      overlayWindow.webContents.send('notify', 'Game not open')
+    } else {
+      overlayWindow.webContents.send('notify', 'Clip saved to Medal')
+    }
+  } else {
+    overlayWindow.webContents.send('notify', `Failed to save clip, ${text.message}`)
+  }
 }
 
 // Re-bind a global shortcut to a new key, reusing the same handler.

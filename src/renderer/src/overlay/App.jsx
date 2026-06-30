@@ -1,7 +1,9 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import Notification from './Notification'
 
 export default function App() {
   const [images, setImages] = useState([])
+  const [notifications, setNotifications] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [opacity, setOpacity] = useState(0.45)
   const [imgSize, setImgSize] = useState({ w: 0, h: 0 })
@@ -9,6 +11,10 @@ export default function App() {
   const imagesRef = useRef([])
   imagesRef.current = images
   const imgRef = useRef(null)
+
+  function pushNotification(message) {
+    setNotifications(prev => [...prev, {id: Date.now(), message}])
+  }
 
   useEffect(() => {
     window.api.onRenderLineup(() => {})
@@ -31,6 +37,10 @@ export default function App() {
         window.api.reportScreenshotIndex(next)
         return next
       })
+    })
+
+    window.api.onNotify((message) => {
+      pushNotification(message)
     })
   }, [])
 
@@ -67,6 +77,11 @@ export default function App() {
 
   return (
     <div className="w-screen h-screen relative pointer-events-none">
+      <div className="absolute top-12 right-0 flex flex-col items-end gap-2 z-50">
+        {notifications.map(n => (
+          <Notification key={n.id} message={n.message} onDone={() => setNotifications(prev => prev.filter(x => x.id !== n.id))} />
+        ))}
+      </div>
       {currentImage && (
         <div className="absolute inset-0 flex flex-col items-start justify-start">
           <div className="relative select-none" style={{ width: '100%', opacity }}>

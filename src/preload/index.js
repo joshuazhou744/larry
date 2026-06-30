@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('api', {
   showLineupScreenshots: (images, opacity) => ipcRenderer.send('show-lineup-screenshots', { images, opacity }),
   setCycleHotkey: (key) => ipcRenderer.send('set-cycle-hotkey', key),
   setExitHotkey:  (key) => ipcRenderer.send('set-exit-hotkey', key),
+  onNotify: (cb) => ipcRenderer.on('notify', (_, message) => cb(message)),
 
   // Overlay → renderer
   onShowScreenshots:          (cb) => ipcRenderer.on('show-screenshots', (_, data) => cb(data)),
