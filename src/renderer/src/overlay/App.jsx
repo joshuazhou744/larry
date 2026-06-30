@@ -77,7 +77,7 @@ export default function App() {
 
   return (
     <div className="w-screen h-screen relative pointer-events-none">
-      <div className="absolute top-12 right-0 flex flex-col items-end gap-2 z-50">
+      <div className="absolute top-12 right-0 flex flex-col-reverse items-end gap-2 z-50">
         {notifications.map(n => (
           <Notification key={n.id} message={n.message} onDone={() => setNotifications(prev => prev.filter(x => x.id !== n.id))} />
         ))}
