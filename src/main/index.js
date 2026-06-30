@@ -21,6 +21,7 @@ let cycleHotkey           = 'Alt+N'
 let exitHotkey            = 'Alt+X'
 let decreaseOpacityHotkey = 'Alt+J'
 let increaseOpacityHotkey = 'Alt+K'
+let clipMedalHotkey       = 'Alt+M'
 let boxModeHotkey         = 'Alt+B'
 let boxMode = false
 
@@ -67,6 +68,30 @@ function decreaseOpacity() {
 function increaseOpacity() {
   if (appMode !== 'screenshot' || !lastScreenshotData) return
   broadcastOpacity(Math.min(1.0, parseFloat((lastScreenshotData.opacity + 0.05).toFixed(2))))
+}
+
+async function clipMedal() {
+  if (appMode !== 'screenshot') return
+  const url = 'http://localhost:12665/api/v1/event/invoke'
+  const payload = {
+    eventId: '2',
+    eventName: 'Lineup',
+    triggerActions: ['SaveClip'],
+    clipOptions: {
+      duration: 10,
+      captureDelayMs: 0
+    }
+  }
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'publicKey': import.meta.env.MAIN_VITE_MEDAL_PUBLIC_API
+    },
+    body: JSON.stringify(payload)
+  })
+  const text = await response.text()
+  console.log('[medal] status:', response.status, text)
 }
 
 // Re-bind a global shortcut to a new key, reusing the same handler.
@@ -159,6 +184,7 @@ app.whenReady().then(() => {
   globalShortcut.register(cycleHotkey, cycleOverlay)
   globalShortcut.register(exitHotkey, exitOverlay)
   globalShortcut.register(boxModeHotkey, toggleBoxMode)
+  globalShortcut.register(clipMedalHotkey, clipMedal)
   globalShortcut.register(decreaseOpacityHotkey, decreaseOpacity)
   globalShortcut.register(increaseOpacityHotkey, increaseOpacity)
 })
@@ -200,6 +226,11 @@ ipcMain.on('set-decrease-opacity-hotkey', (_, newKey) => {
 ipcMain.on('set-increase-opacity-hotkey', (_, newKey) => {
   rebind(increaseOpacityHotkey, newKey, increaseOpacity)
   increaseOpacityHotkey = newKey
+})
+
+ipcMain.on('set-clip-medal-hotkey', (_, newKey) => {
+  rebind(clipMedalHotkey, newKey, clipMedal)
+  clipMedalHotkey = newKey
 })
 
 ipcMain.on('set-box-mode-hotkey', (_, newKey) => {

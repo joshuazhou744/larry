@@ -27,7 +27,7 @@ export default function App() {
   const [selectedAbilitySlot, setSelectedAbilitySlot] = useState(null)
   const [selectedLineupId, setSelectedLineupId] = useState(null)
   const [screenshotOpacity, setScreenshotOpacity] = useState(
-    () => parseFloat(localStorage.getItem('screenshot-opacity') ?? '0.85')
+    () => parseFloat(localStorage.getItem('screenshot-opacity') ?? '0.45')
   )
 
   useEffect(() => {

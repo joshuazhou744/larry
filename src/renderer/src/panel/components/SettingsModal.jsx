@@ -51,6 +51,12 @@ export default function SettingsModal({ onClose, screenshotOpacity, onOpacityCha
             </SettingRow>
           </SettingsSection>
 
+          <SettingsSection label="Medal Clipping">
+            <SettingRow label="Clip medal">
+              <HotkeyInput defaultKey="Alt+M" onCommit={(k) => window.api.setClipMedalHotkey(k)} />
+            </SettingRow>
+          </SettingsSection>
+
         </div>
       </div>
     </div>

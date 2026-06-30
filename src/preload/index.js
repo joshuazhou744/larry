@@ -24,4 +24,5 @@ contextBridge.exposeInMainWorld('api', {
   setDecreaseOpacityHotkey:   (k)  => ipcRenderer.send('set-decrease-opacity-hotkey', k),
   setIncreaseOpacityHotkey:   (k)  => ipcRenderer.send('set-increase-opacity-hotkey', k),
   setBoxModeHotkey:           (k)  => ipcRenderer.send('set-box-mode-hotkey', k),
+  setClipMedalHotkey:           (k)  => ipcRenderer.send('set-clip-medal-hotkey', k),
 })
