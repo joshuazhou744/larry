@@ -2,8 +2,7 @@ import { useState, useRef } from 'react'
 import { IconX } from '@tabler/icons-react'
 import TitlebarButton from './TitlebarButton'
 
-export default function SettingsModal({ onClose, screenshotOpacity, onOpacityChange }) {
-  const [clipDuration, setClipDuration] = useState(20)
+export default function SettingsModal({ onClose, screenshotOpacity, onOpacityChange, clipDuration, onDurationChange }) {
 
   return (
     <div className="absolute inset-0 bg-[var(--bg-overlay)] flex items-center justify-center z-50">
@@ -76,7 +75,10 @@ export default function SettingsModal({ onClose, screenshotOpacity, onOpacityCha
                 value={clipDuration}
                 min={10} max={60} step={5}
                 format={(v) => `${v}s`}
-                onCommit={setClipDuration}
+                onCommit={(v) => {
+                  onDurationChange(v)
+                  window.api.setClipDuration(v)
+                }}
               />
             </SettingRow>
           </SettingsSection>

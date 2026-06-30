@@ -26,6 +26,7 @@ let maxOpacityHotkey      = 'Alt+P'
 let clipMedalHotkey       = 'Alt+M'
 let boxModeHotkey         = 'Alt+B'
 let boxMode = false
+let clipDuration = 20
 
 // Shortcut handlers
 
@@ -90,7 +91,7 @@ async function clipMedal() {
     eventName: 'Lineup',
     triggerActions: ['SaveClip'],
     clipOptions: {
-      duration: 10,
+      duration: clipDuration - 10,
       captureDelayMs: 0
     }
   }
@@ -268,4 +269,8 @@ ipcMain.on('set-clip-medal-hotkey', (_, newKey) => {
 ipcMain.on('set-box-mode-hotkey', (_, newKey) => {
   rebind(boxModeHotkey, newKey, toggleBoxMode)
   boxModeHotkey = newKey
+})
+
+ipcMain.on('set-clip-duration', (_, v) => {
+  clipDuration = v
 })

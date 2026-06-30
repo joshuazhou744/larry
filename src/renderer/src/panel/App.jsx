@@ -29,6 +29,7 @@ export default function App() {
   const [screenshotOpacity, setScreenshotOpacity] = useState(
     () => parseFloat(localStorage.getItem('screenshot-opacity') ?? '0.45')
   )
+  const [clipDuration, setClipDuration] = useState(20)
 
   useEffect(() => {
     window.api.onOpacityChanged((val) => {
@@ -177,6 +178,8 @@ export default function App() {
             onClose={() => setSettingsOpen(false)}
             screenshotOpacity={screenshotOpacity}
             onOpacityChange={handleOpacityChange}
+            clipDuration={clipDuration}
+            onDurationChange={setClipDuration}
           />
         )}
       </div>
