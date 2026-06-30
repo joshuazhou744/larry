@@ -3,6 +3,8 @@ import { IconX } from '@tabler/icons-react'
 import TitlebarButton from './TitlebarButton'
 
 export default function SettingsModal({ onClose, screenshotOpacity, onOpacityChange }) {
+  const [clipDuration, setClipDuration] = useState(20)
+
   return (
     <div className="absolute inset-0 bg-[var(--bg-overlay)] flex items-center justify-center z-50">
       <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg w-full max-w-md mx-4 flex flex-col">
@@ -46,20 +48,36 @@ export default function SettingsModal({ onClose, screenshotOpacity, onOpacityCha
           </SettingsSection>
 
           <SettingsSection label="Overlay">
-            <SettingRow label={`Opacity — ${Math.round(screenshotOpacity * 100)}%`}>
-              <input
-                type="range"
-                min={0.1} max={1} step={0.05}
-                value={screenshotOpacity}
-                onChange={(e) => onOpacityChange(parseFloat(e.target.value))}
-                className="w-32 accent-[var(--accent-red)] cursor-pointer"
-              />
+            <SettingRow label="Opacity">
+              <div className="flex items-center gap-2 shrink-0">
+                <input
+                  type="range"
+                  min={0.1} max={1} step={0.05}
+                  value={screenshotOpacity}
+                  onChange={(e) => onOpacityChange(parseFloat(e.target.value))}
+                  className="w-24 accent-[var(--accent-red)] cursor-pointer"
+                />
+                <NumberInput
+                  value={Math.round(screenshotOpacity * 100)}
+                  min={10} max={100} step={5}
+                  format={(v) => `${v}%`}
+                  onCommit={(v) => onOpacityChange(v / 100)}
+                />
+              </div>
             </SettingRow>
           </SettingsSection>
 
           <SettingsSection label="Medal Clipping">
             <SettingRow label="Clip medal">
               <HotkeyInput defaultKey="Alt+M" onCommit={(k) => window.api.setClipMedalHotkey(k)} />
+            </SettingRow>
+            <SettingRow label="Clip duration">
+              <NumberInput
+                value={clipDuration}
+                min={10} max={60} step={5}
+                format={(v) => `${v}s`}
+                onCommit={setClipDuration}
+              />
             </SettingRow>
           </SettingsSection>
 
@@ -85,6 +103,60 @@ function SettingRow({ label, children }) {
     <div className="flex items-center justify-between gap-4">
       <span className="text-xs text-[var(--text-muted)]">{label}</span>
       {children}
+    </div>
+  )
+}
+
+function NumberInput({ value, min, max, step, format, onCommit }) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(String(value))
+  const inputRef = useRef(null)
+
+  function startEdit() {
+    setDraft(String(value))
+    setEditing(true)
+    setTimeout(() => inputRef.current?.select(), 0)
+  }
+
+  function commit() {
+    const n = parseInt(draft, 10)
+    if (!isNaN(n)) onCommit(Math.min(max, Math.max(min, n)))
+    setEditing(false)
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === 'Enter') commit()
+    if (e.key === 'Escape') setEditing(false)
+    if (e.key === 'ArrowUp') { e.preventDefault(); onCommit(Math.min(max, value + step)) }
+    if (e.key === 'ArrowDown') { e.preventDefault(); onCommit(Math.max(min, value - step)) }
+  }
+
+  if (editing) return (
+    <input
+      ref={inputRef}
+      type="number"
+      value={draft}
+      min={min} max={max} step={step}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={handleKeyDown}
+      className="border rounded px-3 py-1 text-xs text-center outline-none min-w-24 shrink-0 bg-[var(--accent-red-dim)] text-[var(--accent-red)] border-[var(--accent-red)]"
+      style={{ MozAppearance: 'textfield' }}
+    />
+  )
+
+  return (
+    <div
+      tabIndex={0}
+      onClick={startEdit}
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowUp') { e.preventDefault(); onCommit(Math.min(max, value + step)) }
+        if (e.key === 'ArrowDown') { e.preventDefault(); onCommit(Math.max(min, value - step)) }
+        if (e.key === 'Enter') startEdit()
+      }}
+      className="border rounded px-3 py-1 text-xs text-center cursor-pointer select-none outline-none transition-colors min-w-24 shrink-0 bg-[var(--bg-item)] text-[var(--text-primary)] border-[var(--border)] hover:bg-[var(--accent-red-soft)]"
+    >
+      {format ? format(value) : value}
     </div>
   )
 }
