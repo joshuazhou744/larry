@@ -21,6 +21,8 @@ let cycleHotkey           = 'Alt+N'
 let exitHotkey            = 'Alt+X'
 let decreaseOpacityHotkey = 'Alt+J'
 let increaseOpacityHotkey = 'Alt+K'
+let minOpacityHotkey      = 'Alt+O'
+let maxOpacityHotkey      = 'Alt+P'
 let clipMedalHotkey       = 'Alt+M'
 let boxModeHotkey         = 'Alt+B'
 let boxMode = false
@@ -68,6 +70,16 @@ function decreaseOpacity() {
 function increaseOpacity() {
   if (appMode !== 'screenshot' || !lastScreenshotData) return
   broadcastOpacity(Math.min(1.0, parseFloat((lastScreenshotData.opacity + 0.05).toFixed(2))))
+}
+
+function minOpacity() {
+  if (appMode !== 'screenshot' || !lastScreenshotData) return
+  broadcastOpacity(0.1)
+}
+
+function maxOpacity() {
+  if (appMode !== 'screenshot' || !lastScreenshotData) return
+  broadcastOpacity(1)
 }
 
 async function clipMedal() {
@@ -187,6 +199,8 @@ app.whenReady().then(() => {
   globalShortcut.register(clipMedalHotkey, clipMedal)
   globalShortcut.register(decreaseOpacityHotkey, decreaseOpacity)
   globalShortcut.register(increaseOpacityHotkey, increaseOpacity)
+  globalShortcut.register(minOpacityHotkey, minOpacity)
+  globalShortcut.register(maxOpacityHotkey, maxOpacity)
 })
 
 app.on('will-quit', () => { globalShortcut.unregisterAll() })
@@ -226,6 +240,16 @@ ipcMain.on('set-decrease-opacity-hotkey', (_, newKey) => {
 ipcMain.on('set-increase-opacity-hotkey', (_, newKey) => {
   rebind(increaseOpacityHotkey, newKey, increaseOpacity)
   increaseOpacityHotkey = newKey
+})
+
+ipcMain.on('set-min-opacity-hotkey', (_, newKey) => {
+  rebind(minOpacityHotkey, newKey, minOpacity)
+  minOpacityHotkey = newKey
+})
+
+ipcMain.on('set-max-opacity-hotkey', (_, newKey) => {
+  rebind(maxOpacityHotkey, newKey, maxOpacity)
+  maxOpacityHotkey = newKey
 })
 
 ipcMain.on('set-clip-medal-hotkey', (_, newKey) => {

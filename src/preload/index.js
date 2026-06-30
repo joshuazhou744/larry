@@ -23,6 +23,8 @@ contextBridge.exposeInMainWorld('api', {
   reportScreenshotIndex:      (i)  => ipcRenderer.send('screenshot-index', i),
   setDecreaseOpacityHotkey:   (k)  => ipcRenderer.send('set-decrease-opacity-hotkey', k),
   setIncreaseOpacityHotkey:   (k)  => ipcRenderer.send('set-increase-opacity-hotkey', k),
+  setMinOpacityHotkey:   (k)  => ipcRenderer.send('set-min-opacity-hotkey', k),
+  setMaxOpacityHotkey:   (k)  => ipcRenderer.send('set-max-opacity-hotkey', k),
   setBoxModeHotkey:           (k)  => ipcRenderer.send('set-box-mode-hotkey', k),
   setClipMedalHotkey:           (k)  => ipcRenderer.send('set-clip-medal-hotkey', k),
 })
